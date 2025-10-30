@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row mb-4 align-items-center">
+    <div class="col-sm-6">
+      <h2>Hola, {{ current_user.username }}!</h2>
+    </div>
+    <div class="col-sm-6 text-end">
+      <!-- Botón para crear nuevo examen -->
+      <form action="{{ url_for('main.create_exam') }}" method="POST" class="d-inline">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Nuevo Examen
+        </button>
+      </form>
+      {% set processed_tasks = tasks|selectattr('procesado')|list %}
+      {% if processed_tasks %}
+        <a href="{{ url_for('main.download_csv') }}" class="btn btn-success">
+          <i class="bi bi-download"></i> Descargar CSV
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Lista de exámenes -->
+  <div class="row">
+    <div class="col-12">
+      <h3 class="mb-3">Mis Exámenes</h3>
+      {% if tasks %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Matrícula</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in tasks %}
+                <tr>
+                  <td>{{ task.title }}</td>
+                  <td>{{ task.matricula or 'N/A' }}</td>
+                  <td>
+                    <span class="badge {% if task.procesado %}bg-success{% else %}bg-secondary{% endif %}">
+                      {{ 'Procesado' if task.procesado else 'Pendiente' }}
+                    </span>
+                  </td>
+                  <td>{{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td>
+                    {% if not task.procesado %}
+                      <a href="{{ url_for('main.capture_exam', task_id=task.id) }}" class="btn btn-sm btn-info">
+                        Capturar
+                      </a>
+                    {% else %}
+                      <a href="{{ url_for('main.view_results', task_id=task.id) }}" class="btn btn-sm btn-success">
+                        Ver Resultados
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center p-5 border rounded bg-light">
+          <p class="h5">No hay exámenes creados aún.</p>
+          <p class="text-muted">Haz clic en "Nuevo Examen" para empezar.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

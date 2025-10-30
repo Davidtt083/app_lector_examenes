@@ -1,0 +1,37 @@
+# ----------------------------------------
+# Entornos Virtuales
+# ----------------------------------------
+# Nombre común para entornos virtuales de Python
+venv/
+.venv/
+env/
+
+# Carpetas de caché de Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+.pytest_cache/
+
+# ----------------------------------------
+# Configuraciones de Sistema y OS
+# ----------------------------------------
+# Archivos de macOS
+.DS_Store
+
+# Archivos de Windows
+Thumbs.db
+
+# ----------------------------------------
+# Bases de Datos (Específico para tu proyecto)
+# ----------------------------------------
+# Carpeta de base de datos local de Flask/SQLAlchemy
+# Si estás usando la Opción 1 de PythonAnywhere, esta carpeta contiene tus datos
+instance/
+
+# Archivos de configuración y claves sensibles
+.env
+.flaskenv
+
+# Archivos de logs
+*.log

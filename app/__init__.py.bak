@@ -1,0 +1,48 @@
+import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
+db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.login_view = 'main.login'
+login_manager.login_message_category = 'info'
+
+
+def create_app():
+    app = Flask(__name__, instance_relative_config=False, template_folder='templates')
+    
+    # Asegurar que existen los directorios necesarios
+    os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(os.path.join(app.root_path, 'static', 'uploads'), exist_ok=True)
+    
+    app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET', 'cambiar-esta-clave-en-produccion')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(app.instance_path, "site.db")}'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    login_manager.init_app(app)
+
+    with app.app_context():
+        # Importar y registrar modelos
+        from .models import User, Task
+        
+        # Registrar blueprint de rutas
+        from .routes import bp as main_bp
+        app.register_blueprint(main_bp)
+        
+        # Configurar loader de usuario para flask-login
+        @login_manager.user_loader
+        def load_user(user_id):
+            return User.query.get(int(user_id))
+
+        try:
+            # Intentar eliminar todas las tablas existentes
+            db.drop_all()
+        except:
+            pass  # Si falla, ignorar el error
+            
+        # Crear tablas desde cero
+        db.create_all()
+
+    return app

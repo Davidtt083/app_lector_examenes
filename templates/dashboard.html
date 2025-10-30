@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h2>Hola, {{ current_user.username }}!</h2>
+  <p>Esta es una ruta protegida. Solo usuarios autenticados pueden verla.</p>
+{% endblock %}
